@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+      annotations:
+        sidecar.istio.io/inject: "true"
+    spec:
+      containers:
+      - name: backend
+        image: doralie/journal-back:1.0
+        ports:
+        - containerPort: 5000
+        env:
+        - name: DB_HOST
+          value: "mysql-service"
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: journal-secrets
+              key: db-password
